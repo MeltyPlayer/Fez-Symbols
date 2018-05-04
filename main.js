@@ -1,25 +1,3 @@
-const corpus = [
-	{text: [21, 7]},
-	{text: [17, 7]},
-	{text: [22, 12, 21]},
-	{text: [0, 6, 6, 10]},
-	{text: [9, 6, 11, 16]},
-	{text: [9, 1, 11, 8]},
-	{text: [20, 1, 11, 10]},
-	{text: [11, 6, 6, 3]},
-	{text: [21, 7, -2, 17, 7]},
-	{text: [15, 1, 18, -1, 3, 15, 1, 18]},
-	{text: [12, 6, 7, -1, 10, 6, -1, 20, 6, 9, -1, 10, 6]},
-	{text: [3, 15, 15, 18, -1, 12, 6, 17, -1, 17, 5, 4, 15, -1, 18, 6]},
-	{text: [18, 20, 15, -1, 13, 15, 21, -1, 20, 15, -1, 9, 15, 1, 11, 2]},
-	{text: [4, 6, 3, 15, -1, 13, 11, 6, 3, -1, 9, 20, 15, 11, 15, -1, 10, 5, 10, 12, 6, 7]},
-	{text: [20, 6, 14, 15, 2, -1, 19, 14, 1, 4, 16, -1, 13, 6, 11, -1, 6, 7, 18, -1, 9, 1, 18, 4, 20]},
-	{text: [0, 15, 18, -1, 5, 17, -1, 20, 15, 11, 15, -1, 20, 6, 9, -1, 10, 5, 10, -1, 12, 6, 7, -1, 9, 6, 1, 20]},
-	{verified: true, text: [20, 15, 22, 1, 20, 15, 10, 11, 6, 17, -1, 18, 6, 10, 1, 12, -2, 5, -1, 9, 5, 14, 14, -1, 19, 15, -1, 12, 6, 7, 11, -2, 20, 5, -1, 18, 20, 15, 11, 15, -1, 20, 6, 9, -1, 1, 11, 15, -1, 12, 6, 7]},
-	{text: [0, 6, 15, 2, -1, 9, 11, 6, 17, 0, -1, 5, 17, -1, 4, 1, 2, 15, -1, 2, 6, 3, 15, 18, 20, 5, 17, 2, -1, 2, 6, 3, 15, 6, 17, 15, -1, 20, 15, 11, 15, -1, 23, 7, 2, 18, -1, 19, 7, 18, -1, 5, -1, 10, 6, -1, 17, 15, 15, 10, -1, 11, 6, 7, 18, 5, 17, 15, -1, 8, 11, 6, 4, 15, 10, 7, 11, 15, -1, 2, 6, -1, 18, 20, 5, 2, -1, 5, 2, -1, 23, 7, 2, 18, -1, 1]},
-	{text: [4, 14, 15, 1, 17, -1, 7, 8, -1, 18, 20, 15, -1, 3, 15, 2, 2, -1, 0, 6, 5, 17, 0, -1, 18, 6, -1, 20, 1, 7, 15, -1, 18, 6, -1, 0, 6, -1, 9, 11, 6, 17, 0, -1, 12, 6, 7, -1, 1, 11, 15, -1, 5, 13, -1, 2, 6, 3, 15, 18, 20, 5, 17, 0, -1, 10, 6, 15, 2]}
-];
-
 // One letter words
 // 5 - A or I
 
@@ -30,12 +8,30 @@ const corpus = [
 // 19, 15
 
 const translationMap = {
-	6: 'o',
-	15: 'e',
-	20: 't',	
-	17: 'n',
-	5: 'a',
+	0: 'g',
+	1: 'a',
 	2: 's',
+	3: 'm',
+	4: 'c',
+	5: 'i',
+	6: 'o',
+	7: 'u',
+	8: 'p',
+	9: 'w',
+	10: 'd',
+	11: 'r',
+	12: 'y',
+	13: 'f',
+	14: 'l',
+	15: 'e',
+	16: 'k',
+	17: 'n',
+	18: 't',
+	19: 'b',
+	20: 'h',
+	21: 'z',
+	22: 'x',
+	23: 'j',
 }
 
 /*const translationMap = {
@@ -63,6 +59,11 @@ function splitText(text, splitter) {
 	}	
 	groups.push(group);
 	return groups;
+}
+
+function splitTextIntoColumns(text) {
+	const columns = splitText(text, -2);
+	return columns;
 }
 
 function splitTextIntoWords(text) {
@@ -178,19 +179,27 @@ function printWordFrequencies() {
 }
 
 function translateSymbol(symbol) {
-	if (symbol === -1 || symbol === -2) {
+	if (symbol === -1) {
 		return ' ';
+	}
+	else if (symbol === -2) {
+		return '\n';
 	}
 	else {
 		const letter = translationMap[symbol];
-		return letter ? letter : '#';
+		return letter ? letter : symbol;
 	}
 }
 
 function translateText(text) {
 	let translated = '';
-	for (const symbol of text) {
-		translated += translateSymbol(symbol);
+	const columns = splitTextIntoColumns(text);
+	columns.reverse();
+	for (const column of columns) {
+		for (const symbol of column) {
+			translated += translateSymbol(symbol);
+		}
+		translated += '\n';
 	}
 	return translated;
 }
@@ -204,27 +213,42 @@ function printTranslatedCorpus() {
 }
 
 function displayAlphabet() {
+	const $alphabet = $('<div>').addClass('alphabet');
+	for (const symbol in translationMap) {
+		const letter = translationMap[symbol];
+		let $symbolWrapper = $('<span>').addClass('symbol-wrapper');
+		if(symbol >= 0) {
+			const $symbol = $('<img>', {'class': 'symbol', 'src': 'alphabet/' + symbol + '.png'});
+			$symbolWrapper.append($symbol);
+			
+			const $translatedSymbol = $('<span>').addClass('translated-symbol').text(symbol + ', ' + letter);
+			$symbolWrapper.append($translatedSymbol);
+		}
+		$alphabet.append($symbolWrapper);
+	}
+	$(document.body).append($alphabet);
 }
 
 function displayCorpus() {
-	const $corpus = $('<div>', {'class': 'corpus'});
+	const $corpus = $('<div>').addClass('corpus');
 	for (const text of corpus) {
 		const $text = $('<div>').addClass('text');
 		if (text.verified) {
 			$text.addClass('verified');
 		}
-		const columns = splitText(text.text, -2);
+		const columns = splitTextIntoColumns(text.text);
 		for (const column of columns) {
-			const $column = $('<div>', {'class': 'column'});
+			const $column = $('<div>').addClass('column');
 			for (const symbol of column) {
-				let $symbol;
-				if (symbol === -1) {
-					$symbol = $('<span>', {'class': 'space'});
+				let $symbolWrapper = $('<span>').addClass('symbol-wrapper');
+				if(symbol >= 0) {
+					const $symbol = $('<img>', {'class': 'symbol', 'src': 'alphabet/' + symbol + '.png'});
+					$symbolWrapper.append($symbol);
+					
+					const $translatedSymbol = $('<span>').addClass('translated-symbol').text(translateSymbol(symbol));
+					$symbolWrapper.append($translatedSymbol);
 				}
-				else {
-					$symbol = $('<img>', {'class': 'symbol', 'src': 'alphabet/' + symbol + '.png'});
-				}
-				$column.append($symbol);
+				$column.append($symbolWrapper);
 			}
 			$text.append($column);
 		}
