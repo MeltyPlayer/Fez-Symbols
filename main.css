@@ -1,0 +1,34 @@
+.corpus {
+	display: flex;
+}
+
+.text:not(.verified) {
+	background-color: #fcc;
+}
+
+.text {
+	background-color: #333;
+	border: solid 2px black;
+	display: flex;
+	height: fit-content;
+	padding: 4px;
+	margin: 0px 8px;
+}
+
+.column {
+	display: flex;
+	flex-direction: column;
+}
+
+.space, .symbol {
+	display: inline-block;
+	height: 16px;
+	margin: 3px;
+	width: 16px;
+}
+
+.symbol {
+	border: solid 1px black;
+	image-rendering: pixelated;
+	margin: 2px;
+}
